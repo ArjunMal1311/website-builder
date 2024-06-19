@@ -184,8 +184,8 @@ export const deleteAgency = async (agencyId: string) => {
 export const initUser = async (newUser: Partial<User>) => {
     const user = await currentUser()
     if (!user) return
-
-    const userData = await db.user.upsert({
+    
+    await db.user.upsert({
         where: {
             email: user.emailAddresses[0].emailAddress,
         },
@@ -217,12 +217,13 @@ export const updateAgencyDetails = async (
     return response
 }
 
-export const upsertAgency = async (agency: Agency, price?: Plan) => {
+export const upsertAgency = async ({id, ...agency}: Agency, price?: Plan) => {
+    console.log(agency)
     if (!agency.companyEmail) return null
     try {
         const agencyDetails = await db.agency.upsert({
             where: {
-                id: agency.id,
+                id: id,
             },
             update: agency,
             create: {
@@ -235,38 +236,53 @@ export const upsertAgency = async (agency: Agency, price?: Plan) => {
                         {
                             name: 'Dashboard',
                             icon: 'category',
-                            link: `/agency/${agency.id}`,
+                            link: `/agency/${id}`,
                         },
                         {
                             name: 'Launchpad',
                             icon: 'clipboardIcon',
-                            link: `/agency/${agency.id}/launchpad`,
+                            link: `/agency/${id}/launchpad`,
                         },
                         {
                             name: 'Billing',
                             icon: 'payment',
-                            link: `/agency/${agency.id}/billing`,
+                            link: `/agency/${id}/billing`,
                         },
                         {
                             name: 'Settings',
                             icon: 'settings',
-                            link: `/agency/${agency.id}/settings`,
+                            link: `/agency/${id}/settings`,
                         },
                         {
                             name: 'Sub Accounts',
                             icon: 'person',
-                            link: `/agency/${agency.id}/all-subaccounts`,
+                            link: `/agency/${id}/all-subaccounts`,
                         },
                         {
                             name: 'Team',
                             icon: 'shield',
-                            link: `/agency/${agency.id}/team`,
+                            link: `/agency/${id}/team`,
                         },
                     ],
                 },
             },
         })
         return agencyDetails
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getNotificationAndUser = async (agencyId: string) => {
+    try {
+        const response = await db.notification.findMany({
+            where: { agencyId },
+            include: { user: true },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        })
+        return response
     } catch (error) {
         console.log(error)
     }
