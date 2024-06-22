@@ -23,6 +23,7 @@ import { useModal } from '@/providers/modal-provider'
 import SubAccountDetails from '../forms/subaccount-details'
 import { Separator } from '../ui/separator'
 import { icons } from '@/lib/constants'
+import CustomModal from '../global/custom-modal'
 
 type Props = {
   defaultOpen?: boolean
@@ -225,7 +226,7 @@ const MenuOptions = ({
                       : 'No Accounts'}
                   </CommandGroup>
                 </CommandList>
-                {/* {(user?.role === 'AGENCY_OWNER' ||
+                {(user?.role === 'AGENCY_OWNER' ||
                   user?.role === 'AGENCY_ADMIN') && (
                     <SheetClose>
                       <Button
@@ -249,7 +250,7 @@ const MenuOptions = ({
                         Create Sub Account
                       </Button>
                     </SheetClose>
-                  )} */}
+                  )}
               </Command>
             </PopoverContent>
           </Popover>
