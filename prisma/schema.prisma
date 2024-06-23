@@ -128,6 +128,7 @@ model Lane {
   pipeline   Pipeline @relation(fields: [pipelineId], references: [id])
   pipelineId String
   tickets    Ticket[]
+  order      Int      @default(0)
 
   @@index([pipelineId])
 }
@@ -137,19 +138,22 @@ model Ticket {
   name        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  lane        Lane     @relation(fields: [laneId], references: [id])
   laneId      String
   order       Int      @default(0)
+  Lane        Lane     @relation(fields: [laneId], references: [id], onDelete: Cascade)
   value       Float?
   description String?
-  tags        Tag[]
-  customerId  String?
-  customer    Contact? @relation(fields: [customerId], references: [id])
-  User        User?    @relation(fields: [userId], references: [id])
-  userId      String?
+  Tags        Tag[]
+
+  customerId String?
+  Customer   Contact? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  assignedUserId String?
+  Assigned       User?   @relation(fields: [assignedUserId], references: [id], onDelete: SetNull)
 
   @@index([laneId])
   @@index([customerId])
+  @@index([assignedUserId])
 }
 
 model Trigger {
