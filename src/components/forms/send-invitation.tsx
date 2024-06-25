@@ -6,13 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '../ui/input'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '../ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '../ui/select'
 import { Button } from '../ui/button'
 import Loading from '../global/loading'
 import { saveActivityLogsNotification, sendInvitation } from '@/lib/queries'

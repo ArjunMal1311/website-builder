@@ -1,7 +1,6 @@
-import { Contact, Lane, Notification, Prisma, Role, Tag, Ticket } from "@prisma/client"
+import { Contact, Lane, Notification, Prisma, Role, Tag, Ticket, User } from "@prisma/client"
 import { _getTicketsWithAllRelations, getAuthUserDetails, getMedia, getPipelineDetails, getTicketsWithTags, getUserPermissions } from "./queries"
 import { db } from "./db"
-import { User } from "@clerk/nextjs/server"
 import { z } from "zod"
 
 export type NotificationWithUser =
@@ -48,14 +47,18 @@ export type GetMediaFiles = Prisma.PromiseReturnType<typeof getMedia>
 export type CreateMediaType = Prisma.MediaCreateWithoutSubAccountInput
 
 export type TicketAndTags = Ticket & {
-  tags: Tag[]
-  assigned: User | null
-  customer: Contact | null
+  Tags: Tag[]
+  Assigned: User | null
+  Customer: Contact | null
 }
+
+export const CreatePipelineFormSchema = z.object({
+  name: z.string().min(1),
+})
 
 
 export type LaneDetail = Lane & {
-  Tickets: TicketAndTags[]
+  tickets: TicketAndTags[]
 }
 
 export const CreateFunnelFormSchema = z.object({
@@ -80,10 +83,18 @@ const currencyNumberRegex = /^\d+(\.\d{1,2})?$/
 export const TicketFormSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  value: z.string().refine((value) => currencyNumberRegex.test(value), {
-    message: 'Value must be a valid price.',
-  }),
-})
+  value: z.preprocess(
+    (value) => {
+      if (typeof value === "string" && currencyNumberRegex.test(value)) {
+        return parseFloat(value);
+      }
+      return value;
+    },
+    z.number().refine((value) => currencyNumberRegex.test(value.toFixed(2)), {
+      message: 'Value must be a valid price.',
+    })
+  ),
+});
 
 export type TicketDetails = Prisma.PromiseReturnType<
   typeof _getTicketsWithAllRelations

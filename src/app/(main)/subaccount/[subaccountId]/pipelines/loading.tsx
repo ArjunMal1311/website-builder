@@ -1,4 +1,4 @@
-import LoadingPage from '@/components/global/loading-page'
+import LoadingPage from '@/components/global/loading'
 import React from 'react'
 
 const Loading = () => {
