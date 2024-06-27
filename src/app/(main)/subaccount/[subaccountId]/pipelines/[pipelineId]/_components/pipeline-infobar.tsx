@@ -1,5 +1,5 @@
 'use client'
-import CreatePipelineForm from '@/components/forms/create-pipeline-form' 
+import CreatePipelineForm from '@/components/forms/create-pipeline-form'
 import CustomModal from '@/components/global/custom-modal'
 import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandItem, } from '@/components/ui/command'
@@ -17,7 +17,7 @@ type Props = {
   pipelineId: string
 }
 
-const PipelineInfoBar = ({ pipelineId, pipelines, subAccountId }: Props) => {
+const PipelineInfoBar = ({ pipelineId, pipelines = [], subAccountId }: Props) => {
   const { setOpen: setOpenModal, setClose } = useModal()
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(pipelineId)
@@ -55,30 +55,25 @@ const PipelineInfoBar = ({ pipelineId, pipelines, subAccountId }: Props) => {
           </PopoverTrigger>
           <PopoverContent className="w-[200px] p-0">
             <Command>
-              <CommandEmpty>No pipelines found.</CommandEmpty>
+              
               <CommandGroup>
-                {pipelines.map((pipeline) => (
-                  <Link
-                    key={pipeline.id}
-                    href={`/subaccount/${subAccountId}/pipelines/${pipeline.id}`}
-                  >
-                    <CommandItem
+                {pipelines && pipelines.map((pipeline) => (
+                  <div key={pipeline.id} className='my-4'>
+                    <Link
                       key={pipeline.id}
-                      value={pipeline.id}
-                      onSelect={(currentValue) => {
-                        setValue(currentValue)
-                        setOpen(false)
-                      }}
+                      href={`/subaccount/${subAccountId}/pipelines/${pipeline.id}`}
                     >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          value === pipeline.id ? 'opacity-100' : 'opacity-0'
-                        )}
-                      />
-                      {pipeline.name}
-                    </CommandItem>
-                  </Link>
+                      <div className='flex items-center '>
+                        <Check
+                          className={cn(
+                            'mr-2 h-4 w-4',
+                            value === pipeline.id ? 'opacity-100' : 'opacity-0'
+                          )}
+                        />
+                        {pipeline.name}
+                      </div>
+                    </Link>
+                  </div>
                 ))}
                 <Button
                   variant="secondary"
