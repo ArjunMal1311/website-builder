@@ -5,9 +5,7 @@ import { Plan } from '@prisma/client'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
-const Page = async ({
-  searchParams,
-}: {
+const Page = async ({ searchParams }: {
   searchParams: { plan: Plan; state: string; code: string }
 }) => {
 

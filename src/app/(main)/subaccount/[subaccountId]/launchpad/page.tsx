@@ -2,8 +2,6 @@ import BlurPage from '@/components/global/blur-page'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { db } from '@/lib/db'
-import { stripe } from '@/lib/stripe'
-import { getStripeOAuthLink } from '@/lib/utils'
 import { CheckCircleIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -38,30 +36,6 @@ const LaunchPad = async ({ params, searchParams }: Props) => {
         subaccountDetails.name &&
         subaccountDetails.state
 
-    const stripeOAuthLink = getStripeOAuthLink(
-        'subaccount',
-        `launchpad___${subaccountDetails.id}`
-    )
-
-    let connectedStripeAccount = false
-
-    if (searchParams.code) {
-        if (!subaccountDetails.connectAccountId) {
-            try {
-                const response = await stripe.oauth.token({
-                    grant_type: 'authorization_code',
-                    code: searchParams.code,
-                })
-                await db.subAccount.update({
-                    where: { id: params.subaccountId },
-                    data: { connectAccountId: response.stripe_user_id },
-                })
-                connectedStripeAccount = true
-            } catch (error) {
-                console.log('🔴 Could not connect stripe account', error)
-            }
-        }
-    }
 
     return (
         <BlurPage>
@@ -87,35 +61,6 @@ const LaunchPad = async ({ params, searchParams }: Props) => {
                                     <p>Save the website as a shortcut on your mobile devide</p>
                                 </div>
                                 <Button>Start</Button>
-                            </div>
-                            <div className="flex justify-between items-center w-full h-20 border p-4 rounded-lg">
-                                <div className="flex items-center gap-4">
-                                    <Image
-                                        src="/stripelogo.png"
-                                        alt="App logo"
-                                        height={80}
-                                        width={80}
-                                        className="rounded-md object-contain "
-                                    />
-                                    <p>
-                                        Connect your stripe account to accept payments. Stripe is
-                                        used to run payouts.
-                                    </p>
-                                </div>
-                                {subaccountDetails.connectAccountId ||
-                                    connectedStripeAccount ? (
-                                    <CheckCircleIcon
-                                        size={50}
-                                        className=" text-primary p-2 flex-shrink-0"
-                                    />
-                                ) : (
-                                    <Link
-                                        className="bg-primary py-2 px-4 rounded-md text-white"
-                                        href={stripeOAuthLink}
-                                    >
-                                        Start
-                                    </Link>
-                                )}
                             </div>
                             <div className="flex justify-between items-center w-full h-20 border p-4 rounded-lg">
                                 <div className="flex items-center gap-4">

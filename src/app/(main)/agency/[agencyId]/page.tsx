@@ -4,7 +4,7 @@ import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 import { db } from '@/lib/db'
 import { AreaChart } from '@tremor/react'
-import { ClipboardIcon, Contact2, DollarSign, Goal, ShoppingCart } from 'lucide-react'
+import { Contact2, DollarSign, Goal, ShoppingCart } from 'lucide-react'
 
 const page = async ({
   params,
@@ -12,16 +12,11 @@ const page = async ({
   params: { agencyId: string }
   searchParams: { code: string }
 }) => {
-  let currency = 'USD'
   let sessions
   let totalClosedSessions
   let totalPendingSessions
-  let net = 0
-  let potentialIncome = 0
   let closingRate = 0
   const currentYear = new Date().getFullYear()
-  const startDate = new Date(`${currentYear}-01-01T00:00:00Z`).getTime() / 1000
-  const endDate = new Date(`${currentYear}-12-31T23:59:59Z`).getTime() / 1000
 
   const agencyDetails = await db.agency.findUnique({
     where: {
@@ -37,48 +32,7 @@ const page = async ({
     },
   })
 
-  if (agencyDetails.connectAccountId) {
-    // const response = await stripe.accounts.retrieve({
-    //   stripeAccount: agencyDetails.connectAccountId,
-    // })
 
-    // currency = response.default_currency?.toUpperCase() || 'USD'
-    // const checkoutSessions = await stripe.checkout.sessions.list(
-    //   {
-    //     created: { gte: startDate, lte: endDate },
-    //     limit: 100,
-    //   },
-    //   { stripeAccount: agencyDetails.connectAccountId }
-    // )
-    // sessions = checkoutSessions.data
-    // totalClosedSessions = checkoutSessions.data
-    //   .filter((session) => session.status === 'complete')
-    //   .map((session) => ({
-    //     ...session,
-    //     created: new Date(session.created).toLocaleDateString(),
-    //     amount_total: session.amount_total ? session.amount_total / 100 : 0,
-    //   }))
-
-    // totalPendingSessions = checkoutSessions.data
-    //   .filter((session) => session.status === 'open')
-    //   .map((session) => ({
-    //     ...session,
-    //     created: new Date(session.created).toLocaleDateString(),
-    //     amount_total: session.amount_total ? session.amount_total / 100 : 0,
-    //   }))
-    // net = +totalClosedSessions
-    //   .reduce((total, session) => total + (session.amount_total || 0), 0)
-    //   .toFixed(2)
-
-    // potentialIncome = +totalPendingSessions
-    //   .reduce((total, session) => total + (session.amount_total || 0), 0)
-    //   .toFixed(2)
-
-    // closingRate = +(
-    //   (totalClosedSessions.length / checkoutSessions.data.length) *
-    //   100
-    // ).toFixed(2)
-  }
   return (
     <div>
       <h1 className="text-4xl">Dashboard</h1>
@@ -89,7 +43,7 @@ const page = async ({
             <CardHeader>
               <CardDescription>Income</CardDescription>
               <CardTitle className="text-4xl">
-                {net ? `${currency} ${net.toFixed(2)}` : `$0.00`}
+                Income
               </CardTitle>
               <small className="text-xs text-muted-foreground">
                 For the year {currentYear}
@@ -104,9 +58,7 @@ const page = async ({
             <CardHeader>
               <CardDescription>Potential Income</CardDescription>
               <CardTitle className="text-4xl">
-                {potentialIncome
-                  ? `${currency} ${potentialIncome.toFixed(2)}`
-                  : `$0.00`}
+                Potential Income
               </CardTitle>
               <small className="text-xs text-muted-foreground">
                 For the year {currentYear}
@@ -120,7 +72,7 @@ const page = async ({
           <Card className="flex-1 relative">
             <CardHeader>
               <CardDescription>Active Clients</CardDescription>
-              <CardTitle className="text-4xl">{subaccounts.length}</CardTitle>
+              <CardTitle className="text-4xl">Subaccounts Length</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Reflects the number of sub accounts you own and manage.
